@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Fraud Prediction</title>
+    <style>
+        :root {
+            --primary-color: #0056b3; /* Blue */
+            --primary-color-dark: #0056b3;
+            --secondary-color: #6c757d; /* Gray */
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --success-bg: #d1e7dd;
+            --success-text: #0f5132;
+            --success-border: #badbcc;
+            --danger-bg: #f8d7da;
+            --danger-text: #842029;
+            --danger-border: #f5c2c7;
+            --border-radius: 0.375rem; /* Bootstrap's default */
+            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 850px; /* Slightly wider */
+            margin: 20px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 2em;
+            font-weight: 600;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        form fieldset {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            background-color: #fff; /* Ensure fieldset bg is white if body changes */
+        }
+
+        form legend {
+            font-weight: 600;
+            color: var(--primary-color-dark);
+            padding: 0 10px;
+            font-size: 1.25em;
+            margin-bottom: 15px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 18px 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px; /* Increased space */
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 0.9em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        input[type="text"]::placeholder,
+        input[type="number"]::placeholder {
+            color: #adb5bd;
+            opacity: 1;
+        }
+
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            outline: 0;
+        }
+
+        input[type="submit"] {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            display: block;
+            width: auto; /* Fit content or set specific width */
+            margin: 25px auto 0 auto; /* Center button */
+            min-width: 200px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: var(--primary-color-dark);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border-width: 1px;
+            border-style: solid;
+        }
+
+        .result-container.safe {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border-color: var(--success-border);
+        }
+
+        .result-container.fraud {
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+            border-color: var(--danger-border);
+        }
+
+        .result-container h2 {
+            margin-top: 0;
+            font-size: 1.4em; /* Larger result title */
+            margin-bottom: 15px;
+        }
+
+        .result-container p {
+            margin: 10px 0;
+            font-size: 1.15em; /* Larger result text */
+        }
+        .result-container p strong {
+            font-weight: 600;
+        }
+
+        .info-text {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        
+        .v-columns-container {
+            display: grid; /* Use grid for V columns too */
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* More columns for V */
+            gap: 10px 15px;
+            max-height: 450px; /* Increased height */
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 10px;
+            background-color: #fdfdfd; /* Slightly off-white for contrast */
+        }
+        .v-columns-container .form-group { /* Override parent grid settings if needed */
+            min-width: 100px; /* Ensure they don't get too squished */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Transaction Fraud Prediction</h1>
+        <p class="subtitle">
+            Enter the raw transaction details below. Leave fields blank if the value is unknown or Not Applicable (NaN).
+        </p>
+
+        <form method="POST" action="/">
+            <fieldset>
+                <legend>Core Transaction</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="TransactionID">TransactionID (e.g., 2987004):</label>
+                        <input type="number" id="TransactionID" name="TransactionID" value="{{ request.form.TransactionID if request.form.TransactionID is not none else '2987004' }}" step="1" placeholder="e.g., 2987004">
+                         <span class="info-text">Not used for prediction, but for reference.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="TransactionDT">TransactionDT (seconds):</label>
+                        <input type="number" id="TransactionDT" name="TransactionDT" value="{{ request.form.TransactionDT if request.form.TransactionDT is not none else '86506' }}" step="1" placeholder="e.g., 86506" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="TransactionAmt">Transaction Amount:</label>
+                        <input type="number" id="TransactionAmt" name="TransactionAmt" value="{{ request.form.TransactionAmt if request.form.TransactionAmt is not none else '50.0' }}" step="any" placeholder="e.g., 50.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ProductCD">ProductCD:</label>
+                        <select id="ProductCD" name="ProductCD" required>
+                            <option value="W" {% if request.form.ProductCD == 'W' %}selected{% endif %}>W</option>
+                            <option value="H" {% if request.form.ProductCD == 'H' or request.form.ProductCD is none %}selected{% endif %}>H</option>
+                            <option value="C" {% if request.form.ProductCD == 'C' %}selected{% endif %}>C</option>
+                            <option value="S" {% if request.form.ProductCD == 'S' %}selected{% endif %}>S</option>
+                            <option value="R" {% if request.form.ProductCD == 'R' %}selected{% endif %}>R</option>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Card Information</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="card1">card1:</label> <input type="number" id="card1" name="card1" value="{{ request.form.card1 if request.form.card1 is not none else '4497' }}" step="1" placeholder="e.g., 4497"></div>
+                    <div class="form-group">
+                        <label for="card2">card2:</label> <input type="number" id="card2" name="card2" value="{{ request.form.card2 if request.form.card2 is not none else '514.0' }}" step="any" placeholder="e.g., 514.0"></div>
+                    <div class="form-group">
+                        <label for="card3">card3:</label> <input type="number" id="card3" name="card3" value="{{ request.form.card3 if request.form.card3 is not none else '150.0' }}" step="any" placeholder="e.g., 150.0"></div>
+                    <div class="form-group">
+                        <label for="card4">card4:</label>
+                        <select id="card4" name="card4">
+                            <option value="" {% if request.form.card4 == '' %}selected{% endif %}>Unknown</option>
+                            <option value="visa" {% if request.form.card4 == 'visa' %}selected{% endif %}>Visa</option>
+                            <option value="mastercard" {% if request.form.card4 == 'mastercard' or request.form.card4 is none %}selected{% endif %}>Mastercard</option>
+                            <option value="american express" {% if request.form.card4 == 'american express' %}selected{% endif %}>American Express</option>
+                            <option value="discover" {% if request.form.card4 == 'discover' %}selected{% endif %}>Discover</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="card5">card5:</label> <input type="number" id="card5" name="card5" value="{{ request.form.card5 if request.form.card5 is not none else '102.0' }}" step="any" placeholder="e.g., 102.0"></div>
+                    <div class="form-group">
+                        <label for="card6">card6:</label>
+                        <select id="card6" name="card6">
+                            <option value="" {% if request.form.card6 == '' %}selected{% endif %}>Unknown</option>
+                            <option value="credit" {% if request.form.card6 == 'credit' %}selected{% endif %}>credit</option>
+                            <option value="debit" {% if request.form.card6 == 'debit' or request.form.card6 is none %}selected{% endif %}>debit</option>
+                            <option value="debit or credit" {% if request.form.card6 == 'debit or credit' %}selected{% endif %}>debit or credit</option>
+                            <option value="charge card" {% if request.form.card6 == 'charge card' %}selected{% endif %}>charge card</option>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Address & Email</legend>
+                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="addr1">addr1:</label> <input type="number" id="addr1" name="addr1" value="{{ request.form.addr1 if request.form.addr1 is not none else '420.0' }}" step="any" placeholder="e.g., 325.0"></div>
+                    <div class="form-group">
+                        <label for="addr2">addr2:</label> <input type="number" id="addr2" name="addr2" value="{{ request.form.addr2 if request.form.addr2 is not none else '87.0' }}" step="any" placeholder="e.g., 87.0"></div>
+                     <div class="form-group">
+                        <label for="dist1">dist1:</label> <input type="number" id="dist1" name="dist1" value="{{ request.form.dist1 if request.form.dist1 is not none else '' }}" step="any" placeholder="e.g., 19.0"></div>
+                     <div class="form-group">
+                        <label for="dist2">dist2:</label> <input type="number" id="dist2" name="dist2" value="{{ request.form.dist2 if request.form.dist2 is not none else '' }}" step="any" placeholder="e.g., 0.0"></div>
+                    <div class="form-group">
+                        <label for="P_emaildomain">Payer Email Domain:</label> <input type="text" id="P_emaildomain" name="P_emaildomain" value="{{ request.form.P_emaildomain if request.form.P_emaildomain is not none else 'gmail.com' }}" placeholder="e.g., gmail.com"></div>
+                    <div class="form-group">
+                        <label for="R_emaildomain">Recipient Email Domain:</label> <input type="text" id="R_emaildomain" name="R_emaildomain" value="{{ request.form.R_emaildomain if request.form.R_emaildomain is not none else '' }}" placeholder="e.g., aol.com"></div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>C Columns (C1-C14)</legend>
+                <div class="form-grid">
+                    {% for i in range(1, 15) %}
+                    <div class="form-group">
+                        <label for="C{{i}}">C{{i}}:</label>
+                        <input type="number" id="C{{i}}" name="C{{i}}" step="any" value="{{ request.form['C'~i] if request.form['C'~i] is not none else ('1.0' if i in [1,2,6,9,11,13,14] else '0.0') }}" placeholder="e.g., 1.0">
+                    </div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>D Columns (D1-D15)</legend>
+                <div class="form-grid">
+                    {% for i in range(1, 16) %}
+                    <div class="form-group">
+                        <label for="D{{i}}">D{{i}}:</label>
+                        <input type="number" id="D{{i}}" name="D{{i}}" step="any" value="{{ request.form['D'~i] if request.form['D'~i] is not none else ('0.0' if i in [1,4,10,15] else '') }}" placeholder="e.g., 0.0">
+                    </div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>M Columns (M1-M9)</legend>
+                <div class="form-grid">
+                    {% for i in range(1, 10) %}
+                    <div class="form-group">
+                        <label for="M{{i}}">M{{i}}:</label>
+                        <select id="M{{i}}" name="M{{i}}">
+                            <option value="" {% if request.form['M'~i] == '' or request.form['M'~i] is none %}selected{% endif %}>Unknown/NaN</option>
+                            <option value="T" {% if request.form['M'~i] == 'T' %}selected{% endif %}>T</option>
+                            <option value="F" {% if request.form['M'~i] == 'F' %}selected{% endif %}>F</option>
+                        </select>
+                    </div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Identity Columns (id_01 - id_38)</legend>
+                <div class="form-grid">
+                    {% for i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 17, 18, 19, 20, 21, 22, 24, 25, 26, 28, 29, 32] %} {# id_23, 27 handled as string below #}
+                    <div class="form-group">
+                        <label for="id_{{'%02d'|format(i)}}">id_{{'%02d'|format(i)}}:</label>
+                        <input type="number" id="id_{{'%02d'|format(i)}}" name="id_{{'%02d'|format(i)}}" value="{{ request.form['id_'~('%02d'|format(i))] if request.form['id_'~('%02d'|format(i))] is not none else '' }}" step="any" placeholder="Numeric value">
+                    </div>
+                    {% endfor %}
+                    <div class="form-group"><label for="id_12">id_12:</label> <input type="text" id="id_12" name="id_12" value="{{ request.form.id_12 if request.form.id_12 is not none else 'Found' }}" placeholder="Found/NotFound"></div>
+                    <div class="form-group"><label for="id_15">id_15:</label> <input type="text" id="id_15" name="id_15" value="{{ request.form.id_15 if request.form.id_15 is not none else 'New' }}" placeholder="New/Found/Unknown"></div>
+                    <div class="form-group"><label for="id_16">id_16:</label> <input type="text" id="id_16" name="id_16" value="{{ request.form.id_16 if request.form.id_16 is not none else 'Found' }}" placeholder="Found/NotFound"></div>
+                    <div class="form-group"><label for="id_23">id_23:</label> <input type="text" id="id_23" name="id_23" value="{{ request.form.id_23 if request.form.id_23 is not none else '' }}" placeholder="IP_PROXY:..."></div>
+                    <div class="form-group"><label for="id_27">id_27:</label> <input type="text" id="id_27" name="id_27" value="{{ request.form.id_27 if request.form.id_27 is not none else '' }}" placeholder="Found/NotFound"></div>
+                    <div class="form-group"><label for="id_28">id_28:</label> <input type="text" id="id_28" name="id_28" value="{{ request.form.id_28 if request.form.id_28 is not none else 'New' }}" placeholder="New/Found"></div>
+                    <div class="form-group"><label for="id_29">id_29:</label> <input type="text" id="id_29" name="id_29" value="{{ request.form.id_29 if request.form.id_29 is not none else 'Found' }}" placeholder="Found/NotFound"></div>
+                    <div class="form-group"><label for="id_30">id_30 (OS):</label> <input type="text" id="id_30" name="id_30" value="{{ request.form.id_30 if request.form.id_30 is not none else 'Windows 10' }}" placeholder="e.g., Windows 10"></div>
+                    <div class="form-group"><label for="id_31">id_31 (Browser):</label> <input type="text" id="id_31" name="id_31" value="{{ request.form.id_31 if request.form.id_31 is not none else 'chrome 63.0' }}" placeholder="e.g., chrome 74.0"></div>
+                    <div class="form-group"><label for="id_33">id_33 (Resolution):</label> <input type="text" id="id_33" name="id_33" value="{{ request.form.id_33 if request.form.id_33 is not none else '1920x1080' }}" placeholder="e.g., 1920x1080"></div>
+                    <div class="form-group"><label for="id_34">id_34 (match_status):</label> <input type="text" id="id_34" name="id_34" value="{{ request.form.id_34 if request.form.id_34 is not none else 'match_status:2' }}" placeholder="e.g., match_status:2"></div>
+                    {% for i in [35, 36, 37, 38] %}
+                     <div class="form-group">
+                        <label for="id_{{'%02d'|format(i)}}">id_{{'%02d'|format(i)}}:</label>
+                        <select id="id_{{'%02d'|format(i)}}" name="id_{{'%02d'|format(i)}}">
+                            <option value="" {% if request.form['id_'~('%02d'|format(i))] == '' or request.form['id_'~('%02d'|format(i))] is none %}selected{% endif %}>Unknown/NaN</option>
+                            <option value="T" {% if request.form['id_'~('%02d'|format(i))] == 'T' %}selected{% endif %}>T</option>
+                            <option value="F" {% if request.form['id_'~('%02d'|format(i))] == 'F' %}selected{% endif %}>F</option>
+                        </select>
+                    </div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Device Information</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="DeviceType">DeviceType:</label>
+                        <select id="DeviceType" name="DeviceType">
+                            <option value="" {% if request.form.DeviceType == '' %}selected{% endif %}>Unknown</option>
+                            <option value="desktop" {% if request.form.DeviceType == 'desktop' or request.form.DeviceType is none %}selected{% endif %}>desktop</option>
+                            <option value="mobile" {% if request.form.DeviceType == 'mobile' %}selected{% endif %}>mobile</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="DeviceInfo">DeviceInfo:</label>
+                        <input type="text" id="DeviceInfo" name="DeviceInfo" value="{{ request.form.DeviceInfo if request.form.DeviceInfo is not none else 'Windows' }}" placeholder="e.g., Windows or SM-G950F">
+                    </div>
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>V Columns (V1-V339)</legend>
+                <div class="form-grid v-columns-container">
+                    {% for i in range(1, 340) %}
+                    <div class="form-group">
+                        <label for="V{{i}}">V{{i}}:</label>
+                        <input type="number" id="V{{i}}" name="V{{i}}" step="any" value="{{ request.form['V'~i] if request.form['V'~i] is not none else '' }}" placeholder="Numeric value">
+                    </div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <input type="submit" value="Predict Fraud Status">
+        </form>
+
+        {% if prediction_result %}
+            <div class="result-container {{ 'fraud' if prediction_result.is_fraud == 1 else 'safe' }}">
+                <h2>Prediction Result:</h2>
+                <p><strong>Probability of Fraud:</strong> {{ "%.2f"|format(prediction_result.probability_fraud * 100) }}%</p>
+                <p><strong>Conclusion:</strong> 
+                    {% if prediction_result.is_fraud == 1 %}
+                        Transaction has a HIGH RISK of being FRAUDULENT.
+                    {% else %}
+                        Transaction appears to be SAFE.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+
+        {% if error_message %}
+            <div class="result-container fraud">
+                <h2>An Error Occurred:</h2>
+                <p>{{ error_message }}</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

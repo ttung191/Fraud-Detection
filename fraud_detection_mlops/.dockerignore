@@ -1,0 +1,100 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C/C++ object files
+*.so
+*.o
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib60/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+# Usually these files are written by a CI server
+# and deployed to an artifact repository
+*.manifest
+*.spec
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE / Editor specific files
+.vscode/*
+!.vscode/settings.json 
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.project
+*.pydevproject
+.project
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Notebook checkpoints
+.ipynb_checkpoints
+
+# Data files that should not be in the image (if large or sensitive)
+# Nếu bạn muốn COPY . . và không muốn data/raw trong image:
+data/raw/*
+# Nếu bạn không muốn data/processed trong image:
+data/processed/*
+
+# Notebooks (thường không cần trong image production cho API)
+notebooks/
+
+# Test files (không cần cho production API image)
+tests/
+*.test.py
+test_*.py
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker specific files (để tránh copy chính nó vào image)
+Dockerfile
+.dockerignore
+
+# Các file không cần thiết khác
+*.log
+local_settings.py
+*.bak
+*.swp
+*~

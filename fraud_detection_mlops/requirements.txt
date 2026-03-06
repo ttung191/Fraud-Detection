@@ -1,0 +1,10 @@
+pandas
+numpy
+scikit-learn
+lightgbm
+matplotlib
+seaborn
+joblib
+Flask 
+opencensus-ext-azure
+# Thêm các thư viện khác nếu bạn sử dụng (ví dụ: openpyxl nếu đọc/ghi file Excel)

@@ -1,0 +1,19 @@
+{
+    // ... các cài đặt khác của bạn ...
+
+    // Chỉ định VS Code sử dụng file .env để lấy biến môi trường (bao gồm PYTHONPATH)
+    "python.envFile": "${workspaceFolder}/.env",
+
+    // Cung cấp thêm đường dẫn cho extension Pylance/Pyright để phân tích code
+    // Điều này thường hiệu quả hơn là chỉ dựa vào PYTHONPATH từ .env cho việc linting
+    "python.analysis.extraPaths": [
+        "./src",
+        "./aml_deploy_package/src_code" 
+    ],
+
+    // Tùy chọn: Nếu bạn dùng linter khác như Pylint, bạn có thể cần cấu hình riêng
+    // "python.linting.pylintArgs": [
+    //     "--init-hook",
+    //     "import sys; sys.path.extend(['./src', './aml_deploy_package/src_code'])"
+    // ]
+}

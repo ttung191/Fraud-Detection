@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+wheels/
+parts/
+sdist/
+var/
+
+aml_deploy_package/
+# Virtual environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE specific files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+
+# Data - RẤT QUAN TRỌNG
+data/raw/
+data/processed/
+
+# MLflow
+mlruns/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Secrets (nếu có file chứa thông tin nhạy cảm)
+config.json # NẾU config.json chứa subscription_id thật
+# local_settings.py
+
+# Tùy chọn: Bỏ ignore models và artifacts nếu bạn muốn commit chúng (Cách 1 CI/CD)
+# Nhưng nếu chúng rất lớn, hãy cân nhắc Git LFS hoặc không commit
+# !models/
+# !artifacts/final_training_features.json
+# !artifacts/model_info.json
+# (Các file ảnh .png trong artifacts có thể commit nếu không quá lớn)
+
+# Notebook checkpoints
+.ipynb_checkpoints

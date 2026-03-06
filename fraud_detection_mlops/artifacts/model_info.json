@@ -1,0 +1,32 @@
+{
+    "mlflow_run_id": "c2e433171b564d40804af9e50439da0d",
+    "model_path_local": "C:\\Users\\Admin\\OneDrive - National Economics University\\Desktop\\fraud_ml_ops_project\\models\\lgbm_model.joblib",
+    "training_features_path_local": "C:\\Users\\Admin\\OneDrive - National Economics University\\Desktop\\fraud_ml_ops_project\\artifacts\\final_training_features.json",
+    "lgbm_params": {
+        "objective": "binary",
+        "boosting_type": "gbdt",
+        "metric": "auc",
+        "learning_rate": 0.05,
+        "num_leaves": 31,
+        "n_estimators": 500,
+        "max_depth": 7,
+        "seed": 42,
+        "n_jobs": -1,
+        "verbose": -1,
+        "mlflow_experiment_name": "Fraud_Detection_Local_Runs"
+    },
+    "best_iteration": 500,
+    "num_features_trained_on": 264,
+    "auc_valid": 0.94081,
+    "log_loss_valid": 0.08171,
+    "precision_valid": 0.84487,
+    "recall_valid": 0.43938,
+    "f1_score_valid": 0.57811,
+    "auc_test": 0.90598,
+    "log_loss_test": 0.09043,
+    "precision_test": 0.74377,
+    "recall_test": 0.36713,
+    "f1_score_test": 0.4916,
+    "training_timestamp_utc": "2025-05-09T03:56:43.036067+00:00",
+    "training_timestamp_local": "2025-05-09T10:56:45.481547+07:00"
+}
